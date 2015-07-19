@@ -16,7 +16,8 @@
         self.filePath = path;
         self.downloadURL = url;
         self.downloadProgress = 0.0;
-        self.taskIdentifier = -1;
+//        self.taskIdentifier = -1;
+        self.isPaused = false;
     }
     
     return self;

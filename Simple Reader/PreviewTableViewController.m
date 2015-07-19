@@ -9,15 +9,14 @@
 #import "PreviewTableViewController.h"
 #import "PreviewTableViewCell.h"
 #import "Edition.h"
+#import "FileDownload.h"
 #import "AppDelegate.h"
 #import "PDFViewController.h"
 
 @interface PreviewTableViewController ()
-
 @property (nonatomic) NSInteger toDownloadIndex;
-
+@property (strong, nonatomic) NSMutableArray* fileDownloads;
 @end
-
 
 @implementation PreviewTableViewController
 
@@ -28,6 +27,7 @@
         NSString *documentDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
         self.feedPath = [documentDir stringByAppendingPathComponent:@"feed.json"];
         self.feedURL = [NSString stringWithFormat:@"https://hb.jonashoechst.de/feed.json"];
+        self.fileDownloads = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -52,11 +52,10 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark own methods
+#pragma mark - Feed related methods
 
 - (void)updateFeed {
     NSError *error = nil;
-    
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:self.feedURL]];
     NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse: nil error: &error];
     
@@ -72,7 +71,6 @@
     }
     
     [responseData writeToFile:self.feedPath atomically:YES];
-//    NSLog(@"%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
     [self reloadJSONFeed];
     [self.refreshControl endRefreshing];
     [self.tableView reloadData];
@@ -80,16 +78,26 @@
 }
                
 - (void) reloadJSONFeed {
-
+    NSError *error = nil;
     NSData *json = [[NSData alloc] initWithContentsOfFile:self.feedPath];
-    NSMutableDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:json options:kNilOptions error:nil];
+    if (json == nil){
+        NSLog(@"No JSON Feed available: %@", error);
+        return;
+    }
     
-    NSMutableArray *newEditions = [[NSMutableArray alloc] initWithCapacity:20];
+    NSMutableDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:json options:kNilOptions error:&error];
+    
+    if (error != nil) {
+        [self.refreshControl endRefreshing];
+        NSLog(@"Error in parsing json feed: %@", error);
+        return;
+    }
+    
+    NSMutableArray *newEditions = [[NSMutableArray alloc] init];
 
     for(NSString *key in jsonDict) {
         [newEditions addObject:[self parseEditionDict:[jsonDict objectForKey:key]]];
     }
-    
     self.editions = newEditions;
 }
 
@@ -100,7 +108,6 @@
     
     edition.title = [editionDict objectForKey:@"title"];
     edition.shortDescription = [editionDict objectForKey:@"shortDescription"];
-    // using @2x relation from json file
     edition.previewUrl = [editionDict objectForKey:@"previewUrl"];
     edition.pdfUrl = [editionDict objectForKey:@"pdfUrl"];
     edition.filesize = [editionDict objectForKey:@"filesize"];
@@ -112,7 +119,7 @@
     
     NSString *documentDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
     
-    // Check preview availability
+    // Check preview availability, else download image
     NSString *previewFilename = [[edition.previewUrl componentsSeparatedByString:@"/"] lastObject];
     NSString *previewFilePath = [documentDir stringByAppendingPathComponent:previewFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:previewFilePath]){
@@ -124,11 +131,18 @@
     // Check pdf availability
     NSString *pdfFilename = [[edition.pdfUrl componentsSeparatedByString:@"/"] lastObject];
     NSString *pdfFilePath = [documentDir stringByAppendingPathComponent:pdfFilename];
-    
     edition.pdfPath = pdfFilePath;
+    
+    FileDownload* download = [self getFileDownloadForUrl:edition.pdfUrl];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:pdfFilePath]){
         edition.status = downloaded;
+    } else if (download != nil){
+        edition.fileDownload = download;
+        edition.status = downloading;
+        if (download.isPaused) {
+            edition.status = paused;
+        }
     } else {
         edition.status = available;
     }
@@ -144,17 +158,24 @@
     [NSURLConnection sendAsynchronousRequest:previewRequest queue:[NSOperationQueue currentQueue] completionHandler:
      ^(NSURLResponse *previewRequest, NSData *data, NSError *error) {
         if (error) {
-            NSLog(@"Download Error:%@",error.description);
+            NSLog(@"Preview Image Download Error: %@", error);
         }
         if (data) {
             [data writeToFile:filePath atomically:YES];
             edition.previewImage  = [UIImage imageNamed:filePath];
-            // TODO: Reload Cell at index.
             [self.tableView reloadData];
-            NSLog(@"File is saved to %@",filePath);
         }
     }];
-    
+}
+
+#pragma mark - Download related Methods
+
+- (FileDownload*) getFileDownloadForUrl:(NSString *)url{
+    for(FileDownload* download in self.fileDownloads){
+        if ([download.downloadURL isEqualToString:url])
+            return download;
+    }
+    return nil;
 }
 
 #pragma mark - Table view data source
@@ -172,6 +193,8 @@
         
         self.tableView.backgroundView = messageLabel;
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    } else  {
+        self.tableView.backgroundView = nil;
     }
     return 1;
 }
@@ -182,7 +205,6 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     PreviewTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PreviewCell"];
     
     Edition *edition= self.editions[indexPath.row];
@@ -190,10 +212,8 @@
     cell.descriptionText.text = edition.shortDescription;
     cell.coverImageView.image = edition.previewImage;
     
-    UIProgressView *progressView = cell.downloadProgessView;
-    progressView.progress = edition.downloadProgress;
-    
     [cell setStatus:edition.status];
+    if (edition.status == downloading) cell.downloadProgessView.progress = edition.fileDownload.downloadProgress;
 
     return cell;
 }
@@ -202,7 +222,7 @@
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     
     Edition* editon = self.editions[indexPath.row];
-    if (editon.status == downloaded)
+    if (editon.status == downloaded || editon.status == paused)
         return YES;
     
     return NO;
@@ -224,40 +244,22 @@
             if (error != nil) NSLog(@"Error removing file: %@", error);
             
             selected.status = available;
-            selected.downloadProgress = 0.0;
+            selected.fileDownload.downloadProgress = 0.0;
             
+            NSArray* indexPaths = [[NSArray alloc] initWithObjects:indexPath, nil];
+            [tableView reloadRowsAtIndexPaths: indexPaths withRowAnimation:UITableViewRowAnimationNone];
+        } else if (selected.status == paused) {
+            FileDownload* download = [self getFileDownloadForUrl:selected.pdfUrl];
+            
+            [download.downloadTask cancel];
+            [self.fileDownloads removeObject:download];
+            
+            selected.status = available;
             NSArray* indexPaths = [[NSArray alloc] initWithObjects:indexPath, nil];
             [tableView reloadRowsAtIndexPaths: indexPaths withRowAnimation:UITableViewRowAnimationNone];
         }
     }
 }
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
 
 #pragma mark - Navigation
 
@@ -270,35 +272,38 @@
         NSString *question = [NSString stringWithFormat:@"Möchtest du die Ausgabe \"%@\" jetzt herunterladen? (%@)", [selected title], [selected filesize]];
         
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Download" message:question delegate:self cancelButtonTitle:@"Abbrechen" otherButtonTitles:@"Herunterladen",nil];
-        alert.tag = 1;
+        alert.tag = downloadQuestion;
         self.toDownloadIndex = self.tableView.indexPathForSelectedRow.row;
         [alert show];
         
         return NO;
     } else if (selected.status == downloading){
-        NSString *status = [NSString stringWithFormat:@"Die Ausgabe \"%@\" wird gerade herunterladen...", [selected title]];
+        NSString *status = [NSString stringWithFormat:@"Die Ausgabe \"%@\" wird gerade herunterladen... Möchtest den Download anhalten?", [selected title]];
         
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Download läuft" message:status delegate:self cancelButtonTitle:@"Fortfahren" otherButtonTitles:@"Pausieren",nil];
-        alert.tag = 2;
+        alert.tag = pauseQuestion;
         self.toDownloadIndex = self.tableView.indexPathForSelectedRow.row;
         [alert show];
         return NO;
         
     } else if (selected.status == paused) {
-        selected.downloadTask = [self.session downloadTaskWithResumeData:selected.taskResumeData];
-        [selected.downloadTask resume];
-        selected.taskIdentifier = selected.downloadTask.taskIdentifier;
+        NSString *status = [NSString stringWithFormat:@"Der Download der Ausgabe \"%@\" ist angehalten. Möchtest den Download fortfahren?", [selected title]];
         
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Download läuft" message:status delegate:self cancelButtonTitle:@"Abbrechen" otherButtonTitles:@"Fortfahren",nil];
+        alert.tag = continueQuestion;
+        self.toDownloadIndex = self.tableView.indexPathForSelectedRow.row;
+        [alert show];
         return NO;
     } else if (selected.status == unavailable){
         NSString *question = [NSString stringWithFormat:@"Beim Download der Ausgabe \"%@\" scheint etwas schief gelaufen zu sein. Möchtest du es erneut versuchen? (%@)", [selected title], [selected filesize]];
         
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Download" message:question delegate:self cancelButtonTitle:@"Abbrechen" otherButtonTitles:@"Herunterladen",nil];
-        alert.tag = 1;
+        alert.tag = downloadQuestion;
         self.toDownloadIndex = self.tableView.indexPathForSelectedRow.row;
         [alert show];
         return NO;
     } else {
+        NSLog(@"Undefined status of Edition: %lu", selected.status);
         return NO;
     }
 }
@@ -308,55 +313,72 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     Edition *selected = self.editions[self.tableView.indexPathForSelectedRow.row];
     PDFViewController *pdfViewController = segue.destinationViewController;
-    
     pdfViewController.edition = selected;
 }
 
 #pragma mark Alert View Reaction
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    // the user clicked OK
-    if (alertView.tag == 1) {
-        if (buttonIndex == 0) {
-            NSLog(@"Download abgebrochen.");
-        } else {
-            NSLog(@"Download gewollt!");
-            Edition *edition = self.editions[self.toDownloadIndex];
-            if(edition.taskIdentifier == -1){
-                edition.downloadTask = [self.session downloadTaskWithURL:[NSURL URLWithString:edition.pdfUrl]];
-                edition.taskIdentifier = edition.downloadTask.taskIdentifier;
-                edition.status = downloading;
-                [edition.downloadTask resume];
-                edition.downloadProgress = 0.0;
-                NSArray* indexPaths = [[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.toDownloadIndex inSection:0], nil];
-                [self.theTableView reloadRowsAtIndexPaths: indexPaths withRowAnimation:UITableViewRowAnimationNone];
-            }
+    
+    Edition *edition = self.editions[self.toDownloadIndex];
+    
+    if (alertView.tag == downloadQuestion) {
+        if (buttonIndex == 1) {
+            NSLog(@"Download wurde angefordert.");
+            
+            FileDownload *download = [[FileDownload alloc] initWithFilePath:edition.pdfPath andDownloadURL:edition.pdfUrl];
+            download.downloadTask = [self.session downloadTaskWithURL:[NSURL URLWithString:edition.pdfUrl]];
+//            download.taskIdentifier = download.downloadTask.taskIdentifier;
+            download.downloadProgress = 0.0;
+            
+            edition.status = downloading;
+            edition.fileDownload = download;
+            
+            [download.downloadTask resume];
+            
+            [self.fileDownloads addObject:download];
+            
+            NSArray* indexPaths = [[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.toDownloadIndex inSection:0], nil];
+            [self.tableView reloadRowsAtIndexPaths: indexPaths withRowAnimation:UITableViewRowAnimationNone];
         }
-    }
-    if (alertView.tag == 2) {
-        if (buttonIndex == 0) {
-            NSLog(@"Download wird fortgefahren.");
-        } else {
-            NSLog(@"Download pausieren!");
-            Edition *edition = self.editions[self.toDownloadIndex];
-            [edition.downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
+    } else if (alertView.tag == pauseQuestion) {
+        if (buttonIndex == 1) {
+            NSLog(@"Download soll pausiert werden.");
+            
+            edition.status = paused;
+            [edition.fileDownload.downloadTask cancelByProducingResumeData:^(NSData *resumeData) {
                 if (resumeData != nil) {
-                    edition.taskResumeData = [[NSData alloc] initWithData:resumeData];
+                    edition.fileDownload.taskResumeData = [[NSData alloc] initWithData:resumeData];
                 }
             }];
+            
+            NSArray* indexPaths = [[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.toDownloadIndex inSection:0], nil];
+            [self.tableView reloadRowsAtIndexPaths: indexPaths withRowAnimation:UITableViewRowAnimationNone];
+        }
+    } else if (alertView.tag == continueQuestion){
+        if (buttonIndex == 1) {
+            NSLog(@"Download soll fortgefahren werden.");
+            
+            edition.status = downloading;
+            
+            edition.fileDownload.downloadTask = [self.session downloadTaskWithResumeData:edition.fileDownload.taskResumeData];
+            [edition.fileDownload.downloadTask resume];
+//            edition.fileDownload.taskIdentifier = edition.fileDownload.downloadTask.taskIdentifier;
+            
+            NSArray* indexPaths = [[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.toDownloadIndex inSection:0], nil];
+            [self.tableView reloadRowsAtIndexPaths: indexPaths withRowAnimation:UITableViewRowAnimationNone];
         }
     }
-    
 }
 
 #pragma mark URL Session Delegate Helpers 
--(int) getEditionIndexWithTaskIdentifier:(NSUInteger) identifier{
-    for(int i = 0; i < [self.editions count]; i++){
-        if (((Edition*)self.editions[i]).taskIdentifier == identifier) {
-            return i;
-        }
+-(Edition*) getEditionForDownloadTaskIdentifier:(NSUInteger) taskIdentifier{
+    for(Edition* edition in self.editions){
+        if (edition.fileDownload.downloadTask.taskIdentifier == taskIdentifier)
+            return edition;
     }
-    return -1;
+    
+    return nil;
 }
 
 #pragma mark URL Session Delegates
@@ -367,16 +389,15 @@
         NSLog(@"Unknown transfer size");
     }
     else{
-        int index = [self getEditionIndexWithTaskIdentifier:downloadTask.taskIdentifier];
-        Edition *edition = [self.editions objectAtIndex:index];
-        
+        Edition* edition = [self getEditionForDownloadTaskIdentifier:downloadTask.taskIdentifier];
+        long index = [self.editions indexOfObject:edition];
+
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            edition.downloadProgress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
+            edition.fileDownload.downloadProgress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
             
             NSArray* indexPaths = [[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:index inSection:0], nil];
-            [self.theTableView reloadRowsAtIndexPaths: indexPaths withRowAnimation:UITableViewRowAnimationNone];
+            [self.tableView reloadRowsAtIndexPaths: indexPaths withRowAnimation:UITableViewRowAnimationNone];
         }];
-        
     }    
 }
 
@@ -384,27 +405,20 @@
     NSError *error;
     NSFileManager *fileManager =[NSFileManager defaultManager];
     
-    int index = [self getEditionIndexWithTaskIdentifier:downloadTask.taskIdentifier];
-    Edition *edition = self.editions[index];
-    
+    Edition* edition = [self getEditionForDownloadTaskIdentifier:downloadTask.taskIdentifier];
     NSURL *destinationURL = [NSURL fileURLWithPath:edition.pdfPath];
     
-    if ([fileManager fileExistsAtPath:[destinationURL path]])
-        [fileManager removeItemAtURL:destinationURL error:&error];
-    
-    if (error != nil) {
-        NSLog(@"Error removing file: %@", error);
-    }
+    if ([fileManager fileExistsAtPath:[destinationURL path]]) [fileManager removeItemAtURL:destinationURL error:&error];
+    if (error != nil) NSLog(@"Error removing file: %@", error);
 
     BOOL success = [fileManager copyItemAtURL:location toURL:destinationURL error:&error];
-    
     if (success) {
         edition.status = downloaded;
-        edition.downloadProgress = 100.0;
-        edition.taskIdentifier = -1;
-        edition.taskResumeData = nil;
+        edition.fileDownload.downloadProgress = 100.0;
+        edition.fileDownload.taskResumeData = nil;
+        [self.fileDownloads removeObject:edition.fileDownload];
         
-        [self.theTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+        [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
     } else {
         NSLog(@"Downloaded file could not be copied: %@", error);
     }

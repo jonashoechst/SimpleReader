@@ -10,14 +10,4 @@
 
 @implementation Edition
 
--(id)init {
-    if (self == [super init]) {
-        self.downloadProgress = 0.0;
-        self.taskIdentifier = -1;
-    }
-    
-    return self;
-}
-
-
 @end

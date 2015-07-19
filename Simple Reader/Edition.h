@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "FileDownload.h"
 
 typedef enum FileStatus : NSUInteger {
     available,
@@ -29,11 +30,13 @@ typedef enum FileStatus : NSUInteger {
 @property (nonatomic, strong) NSString *filesize;
 @property (nonatomic) FileStatus status;
 
+@property (nonatomic, strong) FileDownload* fileDownload;
 
-@property (nonatomic) unsigned long taskIdentifier;
-@property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
-@property (nonatomic, strong) NSData *taskResumeData;
-@property (nonatomic) double downloadProgress;
+
+//@property (nonatomic) unsigned long taskIdentifier;
+//@property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
+//@property (nonatomic, strong) NSData *taskResumeData;
+//@property (nonatomic) double downloadProgress;
 
 
 @end

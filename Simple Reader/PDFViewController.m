@@ -14,8 +14,6 @@
 
 @implementation PDFViewController
 
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     

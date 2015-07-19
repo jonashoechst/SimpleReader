@@ -250,9 +250,6 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="aktuelle Publikationen" id="aQ7-mo-hpB"/>
-                    <connections>
-                        <outlet property="theTableView" destination="M04-1b-qsP" id="P1y-Tv-F0Q"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uSf-OT-UCN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -262,7 +259,7 @@
         <scene sceneID="xUa-Fa-NIo">
             <objects>
                 <viewController title="PDF View" id="rSq-iq-QTb" customClass="PDFViewController" sceneMemberID="viewController">
-                    <webView key="view" contentMode="scaleToFill" scalesPageToFit="YES" paginationMode="bottomToTop" id="HNu-fT-0C5">
+                    <webView key="view" contentMode="scaleToFill" scalesPageToFit="YES" allowsInlineMediaPlayback="NO" mediaPlaybackRequiresUserAction="NO" mediaPlaybackAllowsAirPlay="NO" keyboardDisplayRequiresUserAction="NO" paginationMode="bottomToTop" id="HNu-fT-0C5">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

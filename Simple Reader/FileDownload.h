@@ -15,8 +15,8 @@
 @property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
 @property (nonatomic, strong) NSData *taskResumeData;
 @property (nonatomic) double downloadProgress;
-@property (nonatomic) unsigned long taskIdentifier;
-@property (nonatomic) BOOL isDownloading;
+//@property (nonatomic) unsigned long taskIdentifier;
+@property (nonatomic) BOOL isPaused;
 
 - (id)initWithFilePath:(NSString *)path andDownloadURL:(NSString *)url;
 - (BOOL)downloadComplete;
