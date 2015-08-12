@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4716A07C1B4DC0D00094DB34"
-               BuildableName = "Simple Reader.app"
+               BuildableName = "Hessebla&#x308;ttche.app"
                BlueprintName = "Simple Reader"
                ReferencedContainer = "container:Simple Reader.xcodeproj">
             </BuildableReference>
@@ -57,7 +57,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4716A07C1B4DC0D00094DB34"
-            BuildableName = "Simple Reader.app"
+            BuildableName = "Hessebla&#x308;ttche.app"
             BlueprintName = "Simple Reader"
             ReferencedContainer = "container:Simple Reader.xcodeproj">
          </BuildableReference>
@@ -77,7 +77,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4716A07C1B4DC0D00094DB34"
-            BuildableName = "Simple Reader.app"
+            BuildableName = "Hessebla&#x308;ttche.app"
             BlueprintName = "Simple Reader"
             ReferencedContainer = "container:Simple Reader.xcodeproj">
          </BuildableReference>
@@ -96,7 +96,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4716A07C1B4DC0D00094DB34"
-            BuildableName = "Simple Reader.app"
+            BuildableName = "Hessebla&#x308;ttche.app"
             BlueprintName = "Simple Reader"
             ReferencedContainer = "container:Simple Reader.xcodeproj">
          </BuildableReference>

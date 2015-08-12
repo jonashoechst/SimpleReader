@@ -95,8 +95,8 @@
     
     NSMutableArray *newEditions = [[NSMutableArray alloc] init];
 
-    for(NSString *key in jsonDict) {
-        [newEditions addObject:[self parseEditionDict:[jsonDict objectForKey:key]]];
+    for(NSMutableDictionary *editionDict in jsonDict) {
+        [newEditions addObject:[self parseEditionDict:editionDict]];
     }
     self.editions = newEditions;
 }

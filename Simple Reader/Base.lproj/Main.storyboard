@@ -264,6 +264,9 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <dataDetectorType key="dataDetectorTypes"/>
+                        <connections>
+                            <outlet property="delegate" destination="rSq-iq-QTb" id="xSs-xi-OqU"/>
+                        </connections>
                     </webView>
                     <connections>
                         <outlet property="webView" destination="HNu-fT-0C5" id="JmE-jJ-hkS"/>
