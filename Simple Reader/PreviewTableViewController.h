@@ -20,7 +20,7 @@ typedef enum AlertType : NSUInteger {
 @property (nonatomic, strong) NSMutableArray *allEditions;
 @property (nonatomic, strong) NSMutableOrderedSet *categories;
 @property (nonatomic, strong) NSString* feedPath;
-@property (nonatomic, strong) NSString* feedURL;
+//@property (nonatomic, strong) NSString* feedURL;
 @property (nonatomic, strong) NSString* filterCategory;
 
 @property (nonatomic, strong) NSURLSession *session;

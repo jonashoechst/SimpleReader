@@ -23,6 +23,8 @@
 		4716A0CE1B4DF3DE0094DB34 /* okay.png in Resources */ = {isa = PBXBuildFile; fileRef = 4716A0CC1B4DF3DE0094DB34 /* okay.png */; };
 		4716A0CF1B4DF3DE0094DB34 /* okay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4716A0CD1B4DF3DE0094DB34 /* okay@2x.png */; };
 		4716A0D41B4DFD600094DB34 /* PDFViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4716A0D31B4DFD600094DB34 /* PDFViewController.m */; };
+		4724050E1BA2C57C003EBF6D /* Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 4724050D1BA2C57C003EBF6D /* Keychain.m */; };
+		472405141BA2D329003EBF6D /* RegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 472405131BA2D329003EBF6D /* RegisterViewController.m */; };
 		47E49E811B505EC5009D32DA /* cloud@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 47E49E801B505EC5009D32DA /* cloud@2x.png */; };
 		47E49E831B505F11009D32DA /* cloud.png in Resources */ = {isa = PBXBuildFile; fileRef = 47E49E821B505F11009D32DA /* cloud.png */; };
 		47E49E861B5135A3009D32DA /* FileDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E49E851B5135A3009D32DA /* FileDownload.m */; };
@@ -67,6 +69,10 @@
 		4716A0CD1B4DF3DE0094DB34 /* okay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "okay@2x.png"; sourceTree = "<group>"; };
 		4716A0D21B4DFD600094DB34 /* PDFViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDFViewController.h; sourceTree = "<group>"; };
 		4716A0D31B4DFD600094DB34 /* PDFViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDFViewController.m; sourceTree = "<group>"; };
+		4724050C1BA2C57C003EBF6D /* Keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Keychain.h; sourceTree = "<group>"; };
+		4724050D1BA2C57C003EBF6D /* Keychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Keychain.m; sourceTree = "<group>"; };
+		472405121BA2D329003EBF6D /* RegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterViewController.h; sourceTree = "<group>"; };
+		472405131BA2D329003EBF6D /* RegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterViewController.m; sourceTree = "<group>"; };
 		47E49E801B505EC5009D32DA /* cloud@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cloud@2x.png"; sourceTree = "<group>"; };
 		47E49E821B505F11009D32DA /* cloud.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cloud.png; sourceTree = "<group>"; };
 		47E49E841B5135A3009D32DA /* FileDownload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileDownload.h; sourceTree = "<group>"; };
@@ -115,6 +121,8 @@
 		4716A07F1B4DC0D00094DB34 /* Simple Reader */ = {
 			isa = PBXGroup;
 			children = (
+				4724050C1BA2C57C003EBF6D /* Keychain.h */,
+				4724050D1BA2C57C003EBF6D /* Keychain.m */,
 				4716A0BF1B4DF1520094DB34 /* Icons */,
 				4716A0B81B4DD5670094DB34 /* View */,
 				4716A0B21B4DCDEF0094DB34 /* Model */,
@@ -174,6 +182,8 @@
 				4716A0BD1B4DD5DB0094DB34 /* PreviewTableViewCell.m */,
 				4716A0D21B4DFD600094DB34 /* PDFViewController.h */,
 				4716A0D31B4DFD600094DB34 /* PDFViewController.m */,
+				472405121BA2D329003EBF6D /* RegisterViewController.h */,
+				472405131BA2D329003EBF6D /* RegisterViewController.m */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -313,8 +323,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				47E49E861B5135A3009D32DA /* FileDownload.m in Sources */,
+				4724050E1BA2C57C003EBF6D /* Keychain.m in Sources */,
 				4716A0B71B4DD3B40094DB34 /* Edition.m in Sources */,
 				4716A0861B4DC0D00094DB34 /* AppDelegate.m in Sources */,
+				472405141BA2D329003EBF6D /* RegisterViewController.m in Sources */,
 				4716A0BE1B4DD5DB0094DB34 /* PreviewTableViewCell.m in Sources */,
 				4716A0B11B4DCD340094DB34 /* PreviewTableViewController.m in Sources */,
 				4716A0831B4DC0D00094DB34 /* main.m in Sources */,

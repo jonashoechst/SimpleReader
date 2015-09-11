@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "Edition.h"
 #import "PreviewTableViewController.h"
+#import "Keychain.h"
 
 @interface AppDelegate ()
 
@@ -19,8 +20,42 @@
     NSMutableArray *_editions;
 }
 
+#define SERVICE_NAME @"SimpleReader"
+
+
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    Keychain * keychain = [[Keychain alloc] initWithService:SERVICE_NAME withGroup:nil];
+    
+    NSString *key= @"SimpleReader Device UUID";
+    NSData *uuid_data =[keychain findDataForKey: key];
+    NSString *uuid;
+    
+    if(uuid_data == nil) {
+        uuid = [[NSUUID UUID] UUIDString];
+        uuid_data = [uuid dataUsingEncoding:NSUTF8StringEncoding];
+        
+        [keychain insertData:uuid_data forKey:key];
+        NSLog(@"UUID not found, generated new one: %@", uuid);
+    } else {
+        uuid = [[NSString alloc] initWithData:uuid_data encoding:NSUTF8StringEncoding];
+        NSLog(@"UUID found: %@", uuid);
+    }
+    
+    UIUserNotificationSettings *settings =
+        [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound)
+                                          categories:nil];
+    
+    [application registerUserNotificationSettings:settings];
+    
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:uuid forKey:@"uuid"];
+    
+    [defaults synchronize];
+    
     
 //    _editions = [NSMutableArray arrayWithCapacity:20];
 //    
@@ -82,6 +117,30 @@
 -(void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler{
     
     self.backgroundTransferCompletionHandler = completionHandler;
+    
+}
+
+# pragma mark Push Notifications
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    //register to receive notifications
+    [application registerForRemoteNotifications];
+}
+
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void(^)())completionHandler {
+    //handle the actions
+//    if ([identifier isEqualToString:@"declineAction"]){
+//    }
+//    else if ([identifier isEqualToString:@"answerAction"]){
+//    }
+}
+
+- (void)application:(UIApplication*) application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*) deviceToken{
+    
+}
+
+- (void)application:(UIApplication*) application didFailToRegisterForRemoteNotificationsWithError:(NSError*) error{
     
 }
 

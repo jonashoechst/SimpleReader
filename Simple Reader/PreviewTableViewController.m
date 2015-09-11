@@ -12,6 +12,7 @@
 #import "FileDownload.h"
 #import "AppDelegate.h"
 #import "PDFViewController.h"
+#import "RegisterViewController.h"
 
 @interface PreviewTableViewController ()
 @property (nonatomic) NSInteger toDownloadIndex;
@@ -26,7 +27,7 @@
     if (self) {
         NSString *documentDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
         self.feedPath = [documentDir stringByAppendingPathComponent:@"feed.json"];
-        self.feedURL = [NSString stringWithFormat:@"https://hb.jonashoechst.de/feed.json"];
+//        self.feedURL = [NSString stringWithFormat:@"https://hb.jonashoechst.de/feed.json"];
         self.fileDownloads = [[NSMutableArray alloc] init];
     }
     return self;
@@ -45,6 +46,8 @@
     self.session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
     
     [self reloadJSONFeed];
+    [self checkStatus];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -52,16 +55,43 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - Register related methods
+
+- (void) checkStatus{
+    // Check if user is already registered
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *status = [defaults stringForKey:@"status"];
+    if ( status == nil || [status isEqualToString:@"unknown"] ){
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+        UIViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"RegisterView"];
+        [self presentViewController:vc animated:YES completion:nil];
+    }
+}
+
 #pragma mark - Feed related methods
 
 - (void)updateFeed {
     NSError *error = nil;
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:self.feedURL]];
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse: nil error: &error];
     
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *uuid = [defaults stringForKey:@"uuid"];
+    
+    NSString *post = [NSString stringWithFormat:@"uid=%@", uuid];
+    NSData *postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:NO];
+    NSString *postLength = [NSString stringWithFormat:@"%lu",[postData length]];
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setURL:[NSURL URLWithString:@"http://jonashoechst.de/fcgi-bin/srs/api/feed"]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:postData];
+    
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse: nil error: &error];
+
     if (error != nil) {
         [self.refreshControl endRefreshing];
-        NSLog(@"Error in download from url %@ - %@", self.feedURL, error);
+        NSLog(@"Error in download from url - %@", error);
         return;
     }
     
@@ -70,15 +100,20 @@
         NSLog(@"Error in deleting old feed: %@", error);
     }
     
+//    [self parseFeed:responseData];
+    
     [responseData writeToFile:self.feedPath atomically:YES];
     [self reloadJSONFeed];
     [self.refreshControl endRefreshing];
     [self.tableView reloadData];
     
 }
+
                
 - (void) reloadJSONFeed {
     NSError *error = nil;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
     NSData *json = [[NSData alloc] initWithContentsOfFile:self.feedPath];
     if (json == nil){
         NSLog(@"No JSON Feed available: %@", error);
@@ -86,15 +121,19 @@
     }
     
     NSMutableDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:json options:kNilOptions error:&error];
-    
     if (error != nil) {
         [self.refreshControl endRefreshing];
         NSLog(@"Error in parsing json feed: %@", error);
         return;
     }
     
+    [defaults setObject:[jsonDict objectForKey:@"status"] forKey:@"status"];
+    [self checkStatus];
+    
+    jsonDict = [jsonDict objectForKey:@"publications"];
+    
+    
     NSMutableArray *newEditions = [[NSMutableArray alloc] init];
-
     for(NSMutableDictionary *editionDict in jsonDict) {
         [newEditions addObject:[self parseEditionDict:editionDict]];
     }
@@ -533,7 +572,7 @@
                     
                     // Show a local notification when all downloads are over.
                     UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-                    localNotification.alertBody = @"Alle Downloads sind fertig!";
+                    localNotification.alertBody = @"Alle Downloads erfolgreich abgeschlossen.";
                     [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
                 }];
             }
