@@ -45,7 +45,7 @@
     sessionConfiguration.HTTPMaximumConnectionsPerHost = 5;
     self.session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
     
-    [self reloadJSONFeed];
+    [self reloadFeed];
     [self checkStatus];
     
 }
@@ -91,36 +91,11 @@
 
     if (error != nil) {
         [self.refreshControl endRefreshing];
-        NSLog(@"Error in download from url - %@", error);
+        NSLog(@"Error in download from url: %@", error);
         return;
     }
     
-    [[NSFileManager defaultManager] removeItemAtPath:self.feedPath error:&error];
-    if (error != nil) {
-        NSLog(@"Error in deleting old feed: %@", error);
-    }
-    
-//    [self parseFeed:responseData];
-    
-    [responseData writeToFile:self.feedPath atomically:YES];
-    [self reloadJSONFeed];
-    [self.refreshControl endRefreshing];
-    [self.tableView reloadData];
-    
-}
-
-               
-- (void) reloadJSONFeed {
-    NSError *error = nil;
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    
-    NSData *json = [[NSData alloc] initWithContentsOfFile:self.feedPath];
-    if (json == nil){
-        NSLog(@"No JSON Feed available: %@", error);
-        return;
-    }
-    
-    NSMutableDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:json options:kNilOptions error:&error];
+    NSMutableDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:responseData options:kNilOptions error:&error];
     if (error != nil) {
         [self.refreshControl endRefreshing];
         NSLog(@"Error in parsing json feed: %@", error);
@@ -128,13 +103,25 @@
     }
     
     [defaults setObject:[jsonDict objectForKey:@"status"] forKey:@"status"];
+    NSMutableDictionary *pubDict = [jsonDict objectForKey:@"publications"];
+    [defaults setObject:pubDict forKey:@"publications"];
+    [defaults synchronize];
+    
+    
     [self checkStatus];
+    [self reloadFeed];
+    [self.refreshControl endRefreshing];
+    [self.tableView reloadData];
     
-    jsonDict = [jsonDict objectForKey:@"publications"];
-    
+}
+
+
+- (void) reloadFeed{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSMutableDictionary *pubDict = [defaults objectForKey:@"publications"];
     
     NSMutableArray *newEditions = [[NSMutableArray alloc] init];
-    for(NSMutableDictionary *editionDict in jsonDict) {
+    for(NSMutableDictionary *editionDict in pubDict) {
         [newEditions addObject:[self parseEditionDict:editionDict]];
     }
     
@@ -162,7 +149,6 @@
         [view addAction:option];
         
     }
-    
     
     UIAlertAction* all = [UIAlertAction actionWithTitle:@"Alles anzeigen" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
                                 [self newFilterCategory:nil];
@@ -192,7 +178,6 @@
     [self.tableView reloadData];
     
 }
-
 
 - (Edition *) parseEditionDict:(NSMutableDictionary *)editionDict {
     
@@ -242,7 +227,6 @@
     
     return edition;
 }
-
 
 - (void) downloadPreviewImageFromURL:(NSString*) url toFilePath:(NSString*) filePath forEdition:(Edition*) edition{
     

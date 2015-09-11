@@ -24,11 +24,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Simple Reader/PreviewTableViewController.m"
-            timestampString = "463681946.570065"
+            timestampString = "463690358.864728"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "553"
-            endingLineNumber = "553"
+            startingLineNumber = "582"
+            endingLineNumber = "582"
             landmarkName = "-URLSessionDidFinishEventsForBackgroundURLSession:"
             landmarkType = "5">
          </BreakpointContent>
@@ -40,11 +40,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Simple Reader/PreviewTableViewController.m"
-            timestampString = "463681946.570065"
+            timestampString = "463690358.864728"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "107"
-            endingLineNumber = "107"
+            startingLineNumber = "116"
+            endingLineNumber = "116"
             landmarkName = "-updateFeed"
             landmarkType = "5">
          </BreakpointContent>
@@ -56,27 +56,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Simple Reader/PreviewTableViewController.m"
-            timestampString = "463681946.570065"
+            timestampString = "463690358.864728"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "143"
-            endingLineNumber = "143"
-            landmarkName = "-reloadJSONFeed"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Simple Reader/PreviewTableViewController.m"
-            timestampString = "463681946.570065"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "189"
-            endingLineNumber = "189"
+            startingLineNumber = "218"
+            endingLineNumber = "218"
             landmarkName = "-newFilterCategory:"
             landmarkType = "5">
          </BreakpointContent>
