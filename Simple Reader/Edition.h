@@ -28,6 +28,7 @@ typedef enum FileStatus : NSUInteger {
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSDate *releaseDate;
 @property (nonatomic, strong) NSString *filesize;
+@property (nonatomic, strong) NSString *category;
 @property (nonatomic) FileStatus status;
 
 @property (nonatomic, strong) FileDownload* fileDownload;

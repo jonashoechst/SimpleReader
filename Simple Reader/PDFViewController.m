@@ -19,11 +19,30 @@
     
     self.title = self.edition.title;
     
+    [self.navigationController setHidesBarsOnSwipe:YES];
+    [self.navigationController setHidesBarsOnTap:YES];
+    [self.navigationController setHidesBarsWhenVerticallyCompact:YES];
+    
+    
     NSURL *url = [NSURL fileURLWithPath:self.edition.pdfPath];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [_webView loadRequest:request];
     
 }
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [self.navigationController setHidesBarsOnSwipe:NO];
+    [self.navigationController setHidesBarsOnTap:NO];
+    [self.navigationController setHidesBarsWhenVerticallyCompact:NO];
+    
+}
+
+-(BOOL)prefersStatusBarHidden{
+    return YES;
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -6,12 +6,12 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--aktuelle Publikationen-->
+        <!--Alles-->
         <scene sceneID="C8w-i0-bh5">
             <objects>
                 <tableViewController id="ews-zv-eml" customClass="PreviewTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="206" sectionHeaderHeight="22" sectionFooterHeight="22" id="M04-1b-qsP">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="64" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -249,7 +249,13 @@
                             <outlet property="delegate" destination="ews-zv-eml" id="A2K-Ir-7QJ"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="aktuelle Publikationen" id="aQ7-mo-hpB"/>
+                    <navigationItem key="navigationItem" title="Alles" id="aQ7-mo-hpB">
+                        <barButtonItem key="leftBarButtonItem" style="plain" systemItem="bookmarks" id="pgW-el-iu0">
+                            <connections>
+                                <action selector="categoryButtonPressed:" destination="ews-zv-eml" id="pyV-dL-cE3"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uSf-OT-UCN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -260,7 +266,7 @@
             <objects>
                 <viewController title="PDF View" id="rSq-iq-QTb" customClass="PDFViewController" sceneMemberID="viewController">
                     <webView key="view" contentMode="scaleToFill" scalesPageToFit="YES" allowsInlineMediaPlayback="NO" mediaPlaybackRequiresUserAction="NO" mediaPlaybackAllowsAirPlay="NO" keyboardDisplayRequiresUserAction="NO" paginationMode="bottomToTop" id="HNu-fT-0C5">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="64" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <dataDetectorType key="dataDetectorTypes"/>
@@ -281,10 +287,14 @@
             <objects>
                 <navigationController id="EfK-J0-let" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="aktuelle Ausgaben" selectedImage="first" id="0Yt-ee-pRT"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="A45-e9-Fxe">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="OZH-Tv-4bA">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
                     <connections>
                         <segue destination="ews-zv-eml" kind="relationship" relationship="rootViewController" id="Svs-PI-WB9"/>
                     </connections>

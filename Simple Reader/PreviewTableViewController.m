@@ -98,7 +98,60 @@
     for(NSMutableDictionary *editionDict in jsonDict) {
         [newEditions addObject:[self parseEditionDict:editionDict]];
     }
-    self.editions = newEditions;
+    
+    self.categories = [[NSMutableOrderedSet alloc] initWithCapacity:20];
+    
+    for(Edition *edition in newEditions){
+        [self.categories addObject:edition.category];
+    }
+    self.allEditions = newEditions;
+    
+    [self newFilterCategory: self.filterCategory];
+}
+
+- (IBAction)categoryButtonPressed:(id)sender {
+    
+    UIAlertController * view=   [UIAlertController alertControllerWithTitle:@"Wähle eine Kategorie aus..." message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    for(NSString *category in self.categories){
+        UIAlertAction* option = [UIAlertAction actionWithTitle:category style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+            //Do some thing here
+            [self newFilterCategory:category];
+            [view dismissViewControllerAnimated:YES completion:nil];
+        }];
+        
+        [view addAction:option];
+        
+    }
+    
+    
+    UIAlertAction* all = [UIAlertAction actionWithTitle:@"Alles anzeigen" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
+                                [self newFilterCategory:nil];
+                                [view dismissViewControllerAnimated:YES completion:nil];
+                            }];
+    
+    [view addAction:all];
+    [self presentViewController:view animated:YES completion:nil];
+}
+
+- (void) newFilterCategory:(NSString *)category{
+    self.filterCategory = category;
+    
+    if (category == nil) {
+        self.filteredEditions = self.allEditions;
+        self.title = @"Alle Hefte";
+    } else {
+        self.title = self.filterCategory;
+        self.filteredEditions = [[NSMutableArray alloc] init];
+        for (Edition *edition in self.allEditions){
+            if ([edition.category isEqualToString:self.filterCategory]){
+                [self.filteredEditions addObject:edition];
+            }
+        }
+    }
+    
+    [self.tableView reloadData];
+    
 }
 
 
@@ -111,6 +164,7 @@
     edition.previewUrl = [editionDict objectForKey:@"previewUrl"];
     edition.pdfUrl = [editionDict objectForKey:@"pdfUrl"];
     edition.filesize = [editionDict objectForKey:@"filesize"];
+    edition.category = [editionDict objectForKey:@"category"];
     
     NSString *releaseDateString = [editionDict objectForKey:@"releaseDate"];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -181,7 +235,7 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (self.editions == nil || [self.editions count] == 0){
+    if (self.filteredEditions == nil || [self.filteredEditions count] == 0){
         UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
         
         messageLabel.text = @"Es sind noch keine Veröffentlichungen vorhanden.\n\n Bitte ziehen um den Feed zu aktualisieren.";
@@ -200,14 +254,14 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.editions count];
+    return [self.filteredEditions count];
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     PreviewTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PreviewCell"];
     
-    Edition *edition= self.editions[indexPath.row];
+    Edition *edition= self.filteredEditions[indexPath.row];
     cell.title.text = edition.title;
     cell.descriptionText.text = edition.shortDescription;
     cell.coverImageView.image = edition.previewImage;
@@ -221,7 +275,7 @@
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    Edition* editon = self.editions[indexPath.row];
+    Edition* editon = self.filteredEditions[indexPath.row];
     if (editon.status == downloaded || editon.status == paused)
         return YES;
     
@@ -232,7 +286,7 @@
 {
     if(editingStyle == UITableViewCellEditingStyleDelete)
     {
-        Edition* selected = [self.editions objectAtIndex:indexPath.row];
+        Edition* selected = [self.filteredEditions objectAtIndex:indexPath.row];
         if (selected.status == downloaded){
             NSError *error;
             NSFileManager *fileManager =[NSFileManager defaultManager];
@@ -264,7 +318,7 @@
 #pragma mark - Navigation
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender {
-    Edition *selected = self.editions[self.tableView.indexPathForSelectedRow.row];
+    Edition *selected = self.filteredEditions[self.tableView.indexPathForSelectedRow.row];
     
     if(selected.status == downloaded){
         return YES;
@@ -311,16 +365,16 @@
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    Edition *selected = self.editions[self.tableView.indexPathForSelectedRow.row];
+    Edition *selected = self.filteredEditions[self.tableView.indexPathForSelectedRow.row];
     PDFViewController *pdfViewController = segue.destinationViewController;
     pdfViewController.edition = selected;
 }
 
-#pragma mark Alert View Reaction
+#pragma mark Alert View Delegate
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     
-    Edition *edition = self.editions[self.toDownloadIndex];
+    Edition *edition = self.filteredEditions[self.toDownloadIndex];
     
     if (alertView.tag == downloadQuestion) {
         if (buttonIndex == 1) {
@@ -371,9 +425,43 @@
     }
 }
 
+#pragma mark 
+
+- (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    NSLog(@"Desicion made");
+    
+//    switch (popup.tag) {
+//        case 1: {
+//            switch (buttonIndex) {
+//                case 0:
+//                    [self FBShare];
+//                    break;
+//                case 1:
+//                    [self TwitterShare];
+//                    break;
+//                case 2:
+//                    [self emailContent];
+//                    break;
+//                case 3:
+//                    [self saveContent];
+//                    break;
+//                case 4:
+//                    [self rateAppYes];
+//                    break;
+//                default:
+//                    break;
+//            }
+//            break;
+//        }
+//        default:
+//            break;
+//    }
+}
+
 #pragma mark URL Session Delegate Helpers 
 -(Edition*) getEditionForDownloadTaskIdentifier:(NSUInteger) taskIdentifier{
-    for(Edition* edition in self.editions){
+    for(Edition* edition in self.filteredEditions){
         if (edition.fileDownload.downloadTask.taskIdentifier == taskIdentifier)
             return edition;
     }
@@ -390,7 +478,7 @@
     }
     else{
         Edition* edition = [self getEditionForDownloadTaskIdentifier:downloadTask.taskIdentifier];
-        long index = [self.editions indexOfObject:edition];
+        long index = [self.filteredEditions indexOfObject:edition];
 
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             edition.fileDownload.downloadProgress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
