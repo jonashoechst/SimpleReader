@@ -28,11 +28,17 @@
                                 <rect key="frame" x="66" y="189" width="468" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="3S9-JP-uSg" id="XA4-S8-aGi"/>
+                                </connections>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="E-Mail Adresse" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="7Eu-Ze-YrX">
                                 <rect key="frame" x="66" y="227" width="468" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="3S9-JP-uSg" id="QdX-8v-zak"/>
+                                </connections>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Pp-u8-gAj">
                                 <rect key="frame" x="16" y="265" width="568" height="30"/>
@@ -151,7 +157,7 @@
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fmI-Wz-ViG" id="ycZ-OH-YbE">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xmX-kh-zuO">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="vcp-zeichen.png" translatesAutoresizingMaskIntoConstraints="NO" id="xmX-kh-zuO">
                                             <rect key="frame" x="0.0" y="-2" width="170" height="243"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" secondItem="xmX-kh-zuO" secondAttribute="height" multiplier="170:243" id="0IH-Xx-eyZ"/>
@@ -189,7 +195,7 @@
                                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="13"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                                                 </textView>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="glyphicons-182-download-alt.png" translatesAutoresizingMaskIntoConstraints="NO" id="ajq-2T-Uux">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="downloading1.png" translatesAutoresizingMaskIntoConstraints="NO" id="ajq-2T-Uux">
                                                     <rect key="frame" x="174" y="14" width="12" height="12"/>
                                                 </imageView>
                                                 <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" misplaced="YES" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="FJT-aI-bjw">
@@ -402,7 +408,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <dataDetectorType key="dataDetectorTypes"/>
                         <connections>
-                            <outlet property="delegate" destination="rSq-iq-QTb" id="xSs-xi-OqU"/>
+                            <outlet property="delegate" destination="rSq-iq-QTb" id="xq7-DO-xCf"/>
                         </connections>
                     </webView>
                     <connections>
@@ -417,7 +423,6 @@
         <scene sceneID="IO7-6w-4kH">
             <objects>
                 <navigationController id="EfK-J0-let" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="aktuelle Ausgaben" selectedImage="first" id="0Yt-ee-pRT"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="A45-e9-Fxe">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -436,7 +441,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="first" width="30" height="30"/>
-        <image name="glyphicons-182-download-alt.png" width="12" height="12"/>
+        <image name="downloading1.png" width="12" height="12"/>
+        <image name="vcp-zeichen.png" width="158" height="155"/>
     </resources>
 </document>

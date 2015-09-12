@@ -36,12 +36,50 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // Take action of a user taking screenshots:
+    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationUserDidTakeScreenshotNotification object:nil queue:mainQueue usingBlock:^(NSNotification *note)
+    {
+        // take the time the screenshot was taken
+        NSDateFormatter *objDateformat = [[NSDateFormatter alloc] init];
+        [objDateformat setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZ"];
+        NSString *timestamp = [objDateformat stringFromDate:[NSDate date]];
+        
+        // Take the exact same screenshot as the user
+//        if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)])
+//            UIGraphicsBeginImageContextWithOptions(self.view.window.bounds.size, NO, [UIScreen mainScreen].scale);
+//        else
+//            UIGraphicsBeginImageContext(self.view.window.bounds.size);
+//        
+//        [self.view.window.layer renderInContext:UIGraphicsGetCurrentContext()];
+//        UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+//        UIGraphicsEndImageContext();
+//        NSData *pngdata = UIImagePNGRepresentation(image);
+        
+        // Get uuid of device
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSString *uuid = [defaults stringForKey:@"uuid"];
+        
+        NSString *post = [NSString stringWithFormat:@"uid=%@&timestamp=%@", uuid, timestamp];
+        NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[post length]];
+        
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+        [request setURL:[NSURL URLWithString:@"http://jonashoechst.de/fcgi-bin/srs/api/report"]];
+        [request setHTTPMethod:@"POST"];
+        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        [request setHTTPBody:[post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+        
+        [NSURLConnection sendAsynchronousRequest:request queue:nil completionHandler:nil];
+//        NSLog(@"A screenshot was taken and reported (%@)", timestamp);
+    }];
+    
     self.refreshControl = [[UIRefreshControl alloc] init];
     self.refreshControl.backgroundColor = [UIColor darkGrayColor];
     self.refreshControl.tintColor = [UIColor whiteColor];
     [self.refreshControl addTarget:self action:@selector(updateFeed) forControlEvents:UIControlEventValueChanged];
     
-    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"de.vcp.hessen.Downloader"];
+    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"de.jonashoechst.hesseblaettche"];
     sessionConfiguration.HTTPMaximumConnectionsPerHost = 5;
     self.session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
     
@@ -66,6 +104,12 @@
         UIViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"RegisterView"];
         [self presentViewController:vc animated:YES completion:nil];
     }
+    if ([status isEqualToString:@"red"]) {
+        NSMutableDictionary* emptyPub = [[NSMutableDictionary alloc] init];
+        [defaults setObject:emptyPub forKey:@"publications"];
+    }
+    
+    [self reloadFeed];
 }
 
 #pragma mark - Feed related methods
@@ -78,7 +122,7 @@
     
     NSString *post = [NSString stringWithFormat:@"uid=%@", uuid];
     NSData *postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:NO];
-    NSString *postLength = [NSString stringWithFormat:@"%lu",[postData length]];
+    NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:[NSURL URLWithString:@"http://jonashoechst.de/fcgi-bin/srs/api/feed"]];
@@ -380,7 +424,7 @@
         [alert show];
         return NO;
     } else {
-        NSLog(@"Undefined status of Edition: %lu", selected.status);
+        NSLog(@"Undefined status of Edition: %lu", (unsigned long)selected.status);
         return NO;
     }
 }
@@ -446,40 +490,6 @@
             [self.tableView reloadRowsAtIndexPaths: indexPaths withRowAnimation:UITableViewRowAnimationNone];
         }
     }
-}
-
-#pragma mark 
-
-- (void)actionSheet:(UIActionSheet *)popup clickedButtonAtIndex:(NSInteger)buttonIndex {
-    
-    NSLog(@"Desicion made");
-    
-//    switch (popup.tag) {
-//        case 1: {
-//            switch (buttonIndex) {
-//                case 0:
-//                    [self FBShare];
-//                    break;
-//                case 1:
-//                    [self TwitterShare];
-//                    break;
-//                case 2:
-//                    [self emailContent];
-//                    break;
-//                case 3:
-//                    [self saveContent];
-//                    break;
-//                case 4:
-//                    [self rateAppYes];
-//                    break;
-//                default:
-//                    break;
-//            }
-//            break;
-//        }
-//        default:
-//            break;
-//    }
 }
 
 #pragma mark URL Session Delegate Helpers 

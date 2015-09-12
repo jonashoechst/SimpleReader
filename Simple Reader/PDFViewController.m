@@ -7,6 +7,7 @@
 //
 
 #import "PDFViewController.h"
+#import "PreventLongPressGestureRecognizer.h"
 
 @interface PDFViewController ()
 
@@ -28,6 +29,9 @@
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [_webView loadRequest:request];
     
+    // Prevent Copy/Paste Menu, with own Recognizer
+    PreventLongPressGestureRecognizer *longPress = [[PreventLongPressGestureRecognizer alloc] initWithTarget:self action:nil];
+    [_webView addGestureRecognizer:longPress];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -39,7 +43,7 @@
     
 }
 
--(BOOL)prefersStatusBarHidden{
+- (BOOL)prefersStatusBarHidden{
     return YES;
 }
 
@@ -49,7 +53,7 @@
     // Dispose of any resources that can be recreated.
 }
 
--(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         [[UIApplication sharedApplication] openURL:[request URL]];
         return NO;

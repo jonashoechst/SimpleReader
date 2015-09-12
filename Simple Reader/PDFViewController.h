@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "Edition.h"
 
-@interface PDFViewController : UIViewController
+@interface PDFViewController : UIViewController <UIWebViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 

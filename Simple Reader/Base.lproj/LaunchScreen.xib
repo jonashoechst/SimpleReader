@@ -18,7 +18,7 @@
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="VCP-Wortbildmarke-RGB-128px.png" translatesAutoresizingMaskIntoConstraints="NO" id="5eo-pX-a8r">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="vcp-wortbildmarke.png" translatesAutoresizingMaskIntoConstraints="NO" id="5eo-pX-a8r">
                     <rect key="frame" x="8" y="8" width="464" height="128"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="5eo-pX-a8r" secondAttribute="height" multiplier="29:8" id="CS0-yf-f70"/>
@@ -60,6 +60,6 @@
         </view>
     </objects>
     <resources>
-        <image name="VCP-Wortbildmarke-RGB-128px.png" width="780" height="208"/>
+        <image name="vcp-wortbildmarke.png" width="780" height="208"/>
     </resources>
 </document>

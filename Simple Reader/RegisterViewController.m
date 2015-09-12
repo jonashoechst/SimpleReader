@@ -25,6 +25,10 @@
     [self.nameTextField setText:[defaults stringForKey:@"name"]];
     [self.emailTextField setText:[defaults stringForKey:@"email"]];
     
+    [self.nameTextField setKeyboardType:UIKeyboardTypeAlphabet];
+    [self.nameTextField setAutocapitalizationType: UITextAutocapitalizationTypeWords];
+    [self.emailTextField setKeyboardType:UIKeyboardTypeEmailAddress];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -51,7 +55,7 @@
     
     NSString *parse_error = nil;
     
-    if ( [name length] <= 5 ){
+    if ( [name length] < 5 ){
         parse_error = @"Bitte gib deinen vollen Namen ein, damit wir wissen, wer das Hesseblättche lesen möchte.";
     } else if ([email length] <= 5){
         parse_error = @"Bitte gib deine E-Mail Adresse ein.";
@@ -102,10 +106,12 @@
     NSString *uuid = [defaults stringForKey:@"uuid"];
     NSString *name = [defaults stringForKey:@"name"];
     NSString *email = [defaults stringForKey:@"email"];
+    NSString *apns_token = [defaults stringForKey:@"apns_token"];
     
-    NSString *post = [NSString stringWithFormat:@"name=%@&email=%@&uid=%@", name, email, uuid];
+    NSString *post = [NSString stringWithFormat:@"name=%@&email=%@&uid=%@&apns_token=%@", name, email, uuid, apns_token];
+    NSLog(@"post request: %@", post);
     NSData *postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:NO];
-    NSString *postLength = [NSString stringWithFormat:@"%lu",[postData length]];
+    NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
 
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:[NSURL URLWithString:@"http://jonashoechst.de/fcgi-bin/srs/api/register"]];
@@ -132,6 +138,18 @@
     NSString* status = [jsonDict objectForKey:@"status"];
     [defaults setObject:status forKey:@"status"];
     return;
+}
+
+- (BOOL) textFieldShouldReturn:(UITextField*) textField{
+    
+    if (textField == self.nameTextField) {
+        [self.emailTextField becomeFirstResponder];
+    } else {
+        [textField resignFirstResponder];
+        [self registerButtonPressed:nil];
+    }
+    
+    return YES;
 }
 
 + (BOOL) isValidEmailAdress:(NSString *)checkString {

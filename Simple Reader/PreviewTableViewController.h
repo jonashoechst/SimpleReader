@@ -27,8 +27,8 @@ typedef enum AlertType : NSUInteger {
 //@property (nonatomic, strong) NSMutableArray *arrFileDownloadData;
 //@property (nonatomic, strong) NSURL *docDirectoryURL;
 
-- (void) reloadJSONFeed;
 - (IBAction)categoryButtonPressed:(id)sender;
+- (void) checkStatus;
 
 
 @end
