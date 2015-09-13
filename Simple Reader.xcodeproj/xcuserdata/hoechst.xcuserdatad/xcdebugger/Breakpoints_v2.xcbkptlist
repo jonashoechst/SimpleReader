@@ -24,11 +24,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Simple Reader/PreviewTableViewController.m"
-            timestampString = "463780799.744336"
+            timestampString = "463841812.886848"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "592"
-            endingLineNumber = "592">
+            startingLineNumber = "601"
+            endingLineNumber = "601">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -38,11 +38,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Simple Reader/PreviewTableViewController.m"
-            timestampString = "463779137.357543"
+            timestampString = "463841812.886848"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "160"
-            endingLineNumber = "160"
+            startingLineNumber = "169"
+            endingLineNumber = "169"
             landmarkName = "-updateFeed"
             landmarkType = "5">
          </BreakpointContent>
@@ -54,11 +54,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Simple Reader/PreviewTableViewController.m"
-            timestampString = "463779137.357543"
+            timestampString = "463841812.886848"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "262"
-            endingLineNumber = "262"
+            startingLineNumber = "271"
+            endingLineNumber = "271"
             landmarkName = "-parseEditionDict:"
             landmarkType = "5">
          </BreakpointContent>
@@ -86,11 +86,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Simple Reader/AppDelegate.m"
-            timestampString = "463779137.357543"
+            timestampString = "463846560.183007"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "138"
-            endingLineNumber = "138"
+            startingLineNumber = "165"
+            endingLineNumber = "165"
             landmarkName = "-application:didReceiveRemoteNotification:"
             landmarkType = "5">
          </BreakpointContent>

@@ -105,7 +105,7 @@
         [self presentViewController:vc animated:YES completion:nil];
     }
     if ([status isEqualToString:@"red"]) {
-        NSMutableDictionary* emptyPub = [[NSMutableDictionary alloc] init];
+        NSArray* emptyPub = [[NSArray alloc] init];
         [defaults setObject:emptyPub forKey:@"publications"];
     }
     
@@ -114,7 +114,16 @@
 
 #pragma mark - Feed related methods
 
+- (void) invokeRefresh{
+    [self.refreshControl beginRefreshing];
+    [self.tableView setContentOffset:CGPointMake(0, self.tableView.contentOffset.y-self.refreshControl.frame.size.height) animated:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self updateFeed];
+    });
+}
+
 - (void)updateFeed {
+    
     NSError *error = nil;
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -147,7 +156,7 @@
     }
     
     [defaults setObject:[jsonDict objectForKey:@"status"] forKey:@"status"];
-    NSMutableDictionary *pubDict = [jsonDict objectForKey:@"publications"];
+    NSMutableArray *pubDict = [jsonDict objectForKey:@"publications"];
     [defaults setObject:pubDict forKey:@"publications"];
     [defaults synchronize];
     
@@ -162,7 +171,7 @@
 
 - (void) reloadFeed{
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSMutableDictionary *pubDict = [defaults objectForKey:@"publications"];
+    NSMutableArray *pubDict = [defaults objectForKey:@"publications"];
     
     NSMutableArray *newEditions = [[NSMutableArray alloc] init];
     for(NSMutableDictionary *editionDict in pubDict) {

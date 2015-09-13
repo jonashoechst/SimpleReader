@@ -419,7 +419,7 @@
             </objects>
             <point key="canvasLocation" x="2262" y="-411"/>
         </scene>
-        <!--aktuelle Ausgaben-->
+        <!--Navigation Controller-->
         <scene sceneID="IO7-6w-4kH">
             <objects>
                 <navigationController id="EfK-J0-let" sceneMemberID="viewController">

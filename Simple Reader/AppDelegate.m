@@ -118,11 +118,13 @@
 }
 
 - (void)application:(UIApplication*) application didReceiveRemoteNotification:(NSDictionary*) notification {
-//    NSLog(@"Recieved Message in foreground: %@", notification);
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    UINavigationController *navigationController = (UINavigationController*) self.window.rootViewController;
+    // [navigationController popViewControllerAnimated:YES];
+    PreviewTableViewController *previewTableViewController = [navigationController.viewControllers objectAtIndex:0];
     
     NSString* status = [notification objectForKey:@"status"];
     if ( status ){
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:status forKey:@"status"];
     }
     
@@ -132,12 +134,35 @@
         [alertView show];
     }
     
-    UINavigationController *navigationController = (UINavigationController*) self.window.rootViewController;
-    [navigationController popViewControllerAnimated:YES];
-    PreviewTableViewController *previewTableViewController = [navigationController.viewControllers objectAtIndex:0];
+    NSMutableDictionary *pushEditionDict = [notification objectForKey:@"pub"];
+    if (pushEditionDict){
+        NSMutableArray *pubDict = [defaults objectForKey:@"publications"];
+        
+        NSMutableArray *newPubDict = [[NSMutableArray alloc] init];
+        BOOL pubFound = false;
+        for (NSMutableDictionary *editionDict in pubDict) {
+            NSString *uid = [editionDict objectForKey:@"uid"];
+            if ([uid isEqualToString:[pushEditionDict objectForKey:@"uid"]]){
+                [newPubDict addObject:pushEditionDict];
+                pubFound = true;
+            } else {
+                [newPubDict addObject:editionDict];
+            }
+        }
+        
+        if (!pubFound){
+            newPubDict = [[NSMutableArray alloc] init];
+            [newPubDict addObject:pushEditionDict];
+            [newPubDict addObjectsFromArray:pubDict];
+        }
+        
+        [defaults setObject:newPubDict forKey:@"publications"];
+        [previewTableViewController reloadFeed];
+        [previewTableViewController.tableView reloadData];
+    }
+    
+    [defaults synchronize];
     [previewTableViewController checkStatus];
-
-
 }
 
 @end

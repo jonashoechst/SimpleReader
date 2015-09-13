@@ -29,6 +29,8 @@ typedef enum AlertType : NSUInteger {
 
 - (IBAction)categoryButtonPressed:(id)sender;
 - (void) checkStatus;
+- (void) invokeRefresh;
+- (void) reloadFeed;
 
 
 @end
