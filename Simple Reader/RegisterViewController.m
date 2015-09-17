@@ -83,7 +83,7 @@
     NSError *error = nil;
     [self registerDevice: &error];
     if (error) {
-        parse_error = [NSString stringWithFormat:@"Gerät konnte nicht registriert werden: %@", [[[error userInfo] allValues] objectAtIndex:0]];
+        parse_error = [NSString stringWithFormat:@"Gerät konnte nicht registriert werden: %@", [[error userInfo] objectForKey:@"NSLocalizedDescription"]];
         NSLog(@"Error registering Device: %@", error);
         
         UIAlertView *alert =[[UIAlertView alloc ] initWithTitle:@"Fehler..."
@@ -114,7 +114,7 @@
     NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
 
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:[NSURL URLWithString:@"http://jonashoechst.de/fcgi-bin/srs/api/register"]];
+    [request setURL:[NSURL URLWithString:@"https://jonashoechst.de/fcgi-bin/srs/api/register"]];
     [request setHTTPMethod:@"POST"];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];

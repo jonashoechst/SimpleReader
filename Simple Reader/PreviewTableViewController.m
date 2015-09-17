@@ -64,7 +64,7 @@
         NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[post length]];
         
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-        [request setURL:[NSURL URLWithString:@"http://jonashoechst.de/fcgi-bin/srs/api/report"]];
+        [request setURL:[NSURL URLWithString:@"https://jonashoechst.de/fcgi-bin/srs/api/report"]];
         [request setHTTPMethod:@"POST"];
         [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
         [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
@@ -188,9 +188,18 @@
     [self newFilterCategory: self.filterCategory];
 }
 
+
+
 - (IBAction)categoryButtonPressed:(id)sender {
+    UIAlertController * view =   [UIAlertController alertControllerWithTitle:@"Wähle eine Kategorie aus..." message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
-    UIAlertController * view=   [UIAlertController alertControllerWithTitle:@"Wähle eine Kategorie aus..." message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
+        // The device is an iPad running iOS 3.2 or later.
+        
+//        view.popoverPresentationController.sourceView = self.view;
+//        view.popoverPresentationController.sourceRect = CGRectMake(0, 0, 60, 10);
+        view.popoverPresentationController.barButtonItem = sender;
+    }
     
     for(NSString *category in self.categories){
         UIAlertAction* option = [UIAlertAction actionWithTitle:category style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
