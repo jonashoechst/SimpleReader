@@ -6,7 +6,6 @@
 //  Copyright (c) 2015 vcp. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import "Edition.h"
 
 @interface PreviewTableViewCell : UITableViewCell
