@@ -12,7 +12,6 @@
 		4716A08F1B4DC0D00094DB34 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4716A08D1B4DC0D00094DB34 /* Main.storyboard */; };
 		4716A0911B4DC0D00094DB34 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4716A0901B4DC0D00094DB34 /* Images.xcassets */; };
 		4716A0941B4DC0D00094DB34 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4716A0921B4DC0D00094DB34 /* LaunchScreen.xib */; };
-		4716A0A01B4DC0D10094DB34 /* Simple_ReaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4716A09F1B4DC0D10094DB34 /* Simple_ReaderTests.m */; };
 		4716A0B11B4DCD340094DB34 /* PreviewTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4716A0B01B4DCD340094DB34 /* PreviewTableViewController.m */; };
 		4716A0B71B4DD3B40094DB34 /* Edition.m in Sources */ = {isa = PBXBuildFile; fileRef = 4716A0B61B4DD3B40094DB34 /* Edition.m */; };
 		4716A0BE1B4DD5DB0094DB34 /* PreviewTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4716A0BD1B4DD5DB0094DB34 /* PreviewTableViewCell.m */; };
@@ -35,16 +34,6 @@
 		47EA76401B5BF2C900FF131C /* vcp-wortbildmarke.png in Resources */ = {isa = PBXBuildFile; fileRef = 47EA763F1B5BF2C900FF131C /* vcp-wortbildmarke.png */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		4716A09A1B4DC0D10094DB34 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4716A0751B4DC0D00094DB34 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4716A07C1B4DC0D00094DB34;
-			remoteInfo = "Simple Reader";
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		4716A07D1B4DC0D00094DB34 /* hesseblaettche.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hesseblaettche.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4716A0811B4DC0D00094DB34 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -54,7 +43,6 @@
 		4716A08E1B4DC0D00094DB34 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4716A0901B4DC0D00094DB34 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		4716A0931B4DC0D00094DB34 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		4716A0991B4DC0D10094DB34 /* Simple ReaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Simple ReaderTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4716A09E1B4DC0D10094DB34 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4716A09F1B4DC0D10094DB34 /* Simple_ReaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Simple_ReaderTests.m; sourceTree = "<group>"; };
 		4716A0AF1B4DCD340094DB34 /* PreviewTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreviewTableViewController.h; sourceTree = "<group>"; };
@@ -75,6 +63,8 @@
 		4724050D1BA2C57C003EBF6D /* Keychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Keychain.m; sourceTree = "<group>"; };
 		472405121BA2D329003EBF6D /* RegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterViewController.h; sourceTree = "<group>"; };
 		472405131BA2D329003EBF6D /* RegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterViewController.m; sourceTree = "<group>"; };
+		4787E6481BC478FE0013B1BD /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		4787E6491BC47B900013B1BD /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		47A6F4B01BA4929300FD8185 /* PreventLongPressGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreventLongPressGestureRecognizer.h; sourceTree = "<group>"; };
 		47A6F4B11BA4929300FD8185 /* PreventLongPressGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreventLongPressGestureRecognizer.m; sourceTree = "<group>"; };
 		47A6F4B31BA4B5F100FD8185 /* vcp-zeichen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vcp-zeichen.png"; sourceTree = "<group>"; };
@@ -95,19 +85,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4716A0961B4DC0D10094DB34 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		4716A0741B4DC0D00094DB34 = {
 			isa = PBXGroup;
 			children = (
+				4787E6491BC47B900013B1BD /* PrefixHeader.pch */,
 				4716A07F1B4DC0D00094DB34 /* Simple Reader */,
 				4716A09C1B4DC0D10094DB34 /* Simple ReaderTests */,
 				4716A07E1B4DC0D00094DB34 /* Products */,
@@ -118,7 +102,6 @@
 			isa = PBXGroup;
 			children = (
 				4716A07D1B4DC0D00094DB34 /* hesseblaettche.app */,
-				4716A0991B4DC0D10094DB34 /* Simple ReaderTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -126,6 +109,7 @@
 		4716A07F1B4DC0D00094DB34 /* Simple Reader */ = {
 			isa = PBXGroup;
 			children = (
+				4787E6481BC478FE0013B1BD /* Constants.h */,
 				4724050C1BA2C57C003EBF6D /* Keychain.h */,
 				4724050D1BA2C57C003EBF6D /* Keychain.m */,
 				4716A0BF1B4DF1520094DB34 /* Icons */,
@@ -234,24 +218,6 @@
 			productReference = 4716A07D1B4DC0D00094DB34 /* hesseblaettche.app */;
 			productType = "com.apple.product-type.application";
 		};
-		4716A0981B4DC0D10094DB34 /* Simple ReaderTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4716A0A61B4DC0D10094DB34 /* Build configuration list for PBXNativeTarget "Simple ReaderTests" */;
-			buildPhases = (
-				4716A0951B4DC0D10094DB34 /* Sources */,
-				4716A0961B4DC0D10094DB34 /* Frameworks */,
-				4716A0971B4DC0D10094DB34 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				4716A09B1B4DC0D10094DB34 /* PBXTargetDependency */,
-			);
-			name = "Simple ReaderTests";
-			productName = "Simple ReaderTests";
-			productReference = 4716A0991B4DC0D10094DB34 /* Simple ReaderTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -270,9 +236,6 @@
 							};
 						};
 					};
-					4716A0981B4DC0D10094DB34 = {
-						CreatedOnToolsVersion = 6.4;
-					};
 				};
 			};
 			buildConfigurationList = 4716A0781B4DC0D00094DB34 /* Build configuration list for PBXProject "Simple Reader" */;
@@ -289,7 +252,6 @@
 			projectRoot = "";
 			targets = (
 				4716A07C1B4DC0D00094DB34 /* Simple Reader */,
-				4716A0981B4DC0D10094DB34 /* Simple ReaderTests */,
 			);
 		};
 /* End PBXProject section */
@@ -317,13 +279,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4716A0971B4DC0D10094DB34 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -344,23 +299,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4716A0951B4DC0D10094DB34 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4716A0A01B4DC0D10094DB34 /* Simple_ReaderTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		4716A09B1B4DC0D10094DB34 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4716A07C1B4DC0D00094DB34 /* Simple Reader */;
-			targetProxy = 4716A09A1B4DC0D10094DB34 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		4716A08D1B4DC0D00094DB34 /* Main.storyboard */ = {
@@ -406,8 +345,11 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/PrefixHeader.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -449,7 +391,10 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/PrefixHeader.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -467,14 +412,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jonas Hochst (U32D7SQZDU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "Simple Reader/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "de.jonashoechst.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = hesseblaettche;
-				PROVISIONING_PROFILE = "f991d332-1fe5-42c4-ad36-0c414d8cd9ab";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -483,47 +428,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jonas Hochst (U32D7SQZDU)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "Simple Reader/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "de.jonashoechst.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = hesseblaettche;
-				PROVISIONING_PROFILE = "f991d332-1fe5-42c4-ad36-0c414d8cd9ab";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		4716A0A71B4DC0D10094DB34 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "Simple ReaderTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "de.vcp.hessen.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		4716A0A81B4DC0D10094DB34 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "Simple ReaderTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "de.vcp.hessen.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -544,15 +457,6 @@
 			buildConfigurations = (
 				4716A0A41B4DC0D10094DB34 /* Debug */,
 				4716A0A51B4DC0D10094DB34 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		4716A0A61B4DC0D10094DB34 /* Build configuration list for PBXNativeTarget "Simple ReaderTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4716A0A71B4DC0D10094DB34 /* Debug */,
-				4716A0A81B4DC0D10094DB34 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

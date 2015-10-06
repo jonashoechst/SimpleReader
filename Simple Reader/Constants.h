@@ -9,5 +9,19 @@
 #ifndef Constants_h
 #define Constants_h
 
+#define SERVICE_NAME @"Hesseblättche"
 
-#endif /* Constants_h */
+
+#ifdef DEBUG
+
+#define ROOT_URL @"https://jonashoechst.de/fcgi-bin/srs-dev"
+
+#else
+
+#define ROOT_URL @"https://jonashoechst.de/fcgi-bin/srs"
+
+#endif
+
+
+#endif
+/* Constants_h */

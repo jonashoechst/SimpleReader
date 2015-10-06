@@ -114,7 +114,7 @@
     NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
 
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:[NSURL URLWithString:@"https://jonashoechst.de/fcgi-bin/srs/api/register"]];
+    [request setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/api/register", ROOT_URL]]];
     [request setHTTPMethod:@"POST"];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];

@@ -27,7 +27,6 @@
     if (self) {
         NSString *documentDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
         self.feedPath = [documentDir stringByAppendingPathComponent:@"feed.json"];
-//        self.feedURL = [NSString stringWithFormat:@"https://hb.jonashoechst.de/feed.json"];
         self.fileDownloads = [[NSMutableArray alloc] init];
     }
     return self;
@@ -44,18 +43,7 @@
         NSDateFormatter *objDateformat = [[NSDateFormatter alloc] init];
         [objDateformat setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZ"];
         NSString *timestamp = [objDateformat stringFromDate:[NSDate date]];
-        
-        // Take the exact same screenshot as the user
-//        if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)])
-//            UIGraphicsBeginImageContextWithOptions(self.view.window.bounds.size, NO, [UIScreen mainScreen].scale);
-//        else
-//            UIGraphicsBeginImageContext(self.view.window.bounds.size);
-//        
-//        [self.view.window.layer renderInContext:UIGraphicsGetCurrentContext()];
-//        UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-//        UIGraphicsEndImageContext();
-//        NSData *pngdata = UIImagePNGRepresentation(image);
-        
+
         // Get uuid of device
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSString *uuid = [defaults stringForKey:@"uuid"];
@@ -64,14 +52,43 @@
         NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[post length]];
         
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-        [request setURL:[NSURL URLWithString:@"https://jonashoechst.de/fcgi-bin/srs/api/report"]];
+        [request setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/api/report", ROOT_URL]]];
         [request setHTTPMethod:@"POST"];
         [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
         [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
         [request setHTTPBody:[post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
         
-        [NSURLConnection sendAsynchronousRequest:request queue:nil completionHandler:nil];
-//        NSLog(@"A screenshot was taken and reported (%@)", timestamp);
+        [NSURLConnection sendAsynchronousRequest:request
+                                           queue:[[NSOperationQueue alloc] init]
+                               completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError)
+        {
+            
+            NSError *error = connectionError;
+            
+            if (error != nil) {
+                NSLog(@"Error in reporting screenshot: %@", error);
+                return;
+            }
+            if ( data == nil ) {
+                NSLog(@"Data is nil, but there appears to be no error.");
+                return;
+            }
+            
+            NSMutableDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+            if (error != nil) {
+                NSLog(@"Error in parsing json feed: %@", error);
+                return;
+            }
+            
+            [defaults setObject:[jsonDict objectForKey:@"status"] forKey:@"status"];
+            NSMutableArray *pubDict = [jsonDict objectForKey:@"publications"];
+            [defaults setObject:pubDict forKey:@"publications"];
+            [defaults synchronize];
+            
+            [self checkStatus];
+            [self reloadFeed];
+            [self.tableView reloadData];
+        }];
     }];
     
     self.refreshControl = [[UIRefreshControl alloc] init];
@@ -79,7 +96,7 @@
     self.refreshControl.tintColor = [UIColor whiteColor];
     [self.refreshControl addTarget:self action:@selector(updateFeed) forControlEvents:UIControlEventValueChanged];
     
-    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"de.jonashoechst.hesseblaettche"];
+    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSBundle mainBundle] bundleIdentifier]];
     sessionConfiguration.HTTPMaximumConnectionsPerHost = 5;
     self.session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
     
@@ -134,7 +151,7 @@
     NSString *postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:[NSURL URLWithString:@"https://jonashoechst.de/fcgi-bin/srs/api/feed"]];
+    [request setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/api/feed", ROOT_URL]]];
     [request setHTTPMethod:@"POST"];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
