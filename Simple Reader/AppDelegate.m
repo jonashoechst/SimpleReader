@@ -20,14 +20,12 @@
     NSMutableArray *_editions;
 }
 
-#define SERVICE_NAME @"SimpleReader"
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     // If the App is opened for the first time, a uuid is generated to identify the device.
     // The generated uuid is then stored in the keychain, so it can't be removed.
-    Keychain * keychain = [[Keychain alloc] initWithService:SERVICE_NAME withGroup:nil];
-    NSString *key= @"SimpleReader Device UUID";
+    Keychain *keychain = [[Keychain alloc] initWithService:SERVICE_NAME withGroup:nil];
+    NSString *key= @"Device UUID";
     NSData *uuid_data =[keychain findDataForKey: key];
     NSString *uuid;
     
