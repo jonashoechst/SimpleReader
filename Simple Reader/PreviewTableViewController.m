@@ -222,8 +222,7 @@
     if (error != nil) {
         NSLog(@"Error in parsing json feed: %@", error);
         
-        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Aktualisieren fehlgeschlagen." message:[error localizedDescription] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil];
-        [alert show];
+        [[[UIAlertView alloc]initWithTitle:@"Aktualisieren fehlgeschlagen." message:[error localizedDescription] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil] show];
         
         return;
     }
@@ -360,6 +359,7 @@
      ^(NSURLResponse *previewRequest, NSData *data, NSError *error) {
          if (error) {
              NSLog(@"Preview Image Download Error: %@", error);
+             [[[UIAlertView alloc]initWithTitle:@"Vorschaubild konnte nicht geladen werden." message:[error localizedDescription] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil] show];
          }
          if (data) {
              [data writeToFile:filePath atomically:YES];
@@ -446,7 +446,9 @@
             if ([fileManager fileExistsAtPath:[destinationURL path]])
                 [fileManager removeItemAtURL:destinationURL error:&error];
             
-            if (error != nil) NSLog(@"Error removing file: %@", error);
+            if (error != nil) {
+                NSLog(@"Error removing file: %@", error);
+            }
             
             selected.status = available;
             selected.fileDownload.downloadProgress = 0.0;

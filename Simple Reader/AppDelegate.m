@@ -109,8 +109,6 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:apns_token forKey:@"apns_token"];
     [defaults synchronize];
-    
-//    NSLog(@"apns_token: %@", apns_token);
 }
 
 - (void)application:(UIApplication*) application didFailToRegisterForRemoteNotificationsWithError:(NSError*) error{
