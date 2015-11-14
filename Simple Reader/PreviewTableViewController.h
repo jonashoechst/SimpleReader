@@ -24,8 +24,11 @@ typedef enum AlertType : NSUInteger {
 @property (nonatomic, strong) NSURLSession *session;
 //@property (nonatomic, strong) NSMutableArray *arrFileDownloadData;
 //@property (nonatomic, strong) NSURL *docDirectoryURL;
+@property (weak, nonatomic) IBOutlet UIButton *statusButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *statusBarButton;
 
 - (IBAction)categoryButtonPressed:(id)sender;
+- (IBAction)statusButtonPressed:(id)sender;
 - (void) checkStatus;
 - (void) invokeRefresh;
 - (void) reloadFeed;

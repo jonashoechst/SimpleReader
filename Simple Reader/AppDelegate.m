@@ -25,7 +25,7 @@
     // If the App is opened for the first time, a uuid is generated to identify the device.
     // The generated uuid is then stored in the keychain, so it can't be removed.
     Keychain *keychain = [[Keychain alloc] initWithService:SERVICE_NAME withGroup:nil];
-    NSString *key= @"Device UUID";
+    NSString *key= @"Device-UUID";
     NSData *uuid_data =[keychain findDataForKey: key];
     NSString *uuid;
     
@@ -39,6 +39,12 @@
     }
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:uuid forKey:@"uuid"];
+    
+    NSString *lastMessage = [defaults objectForKey:@"lastMessage"];
+    if (!lastMessage){
+        [defaults setObject:@"Es sind noch keine Veröffentlichungen vorhanden." forKey:@"lastMessage"];
+    }
+    
     [defaults synchronize];
     
     // Ask for push notification permissions
@@ -118,12 +124,15 @@
 - (void)application:(UIApplication*) application didReceiveRemoteNotification:(NSDictionary*) notification {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     UINavigationController *navigationController = (UINavigationController*) self.window.rootViewController;
-    // [navigationController popViewControllerAnimated:YES];
     PreviewTableViewController *previewTableViewController = [navigationController.viewControllers objectAtIndex:0];
     
     NSString* status = [notification objectForKey:@"status"];
     if ( status ){
         [defaults setObject:status forKey:@"status"];
+    }
+    NSString* lastMessage = [notification objectForKey:@"lastMessage"];
+    if ( lastMessage ){
+        [defaults setObject:lastMessage forKey:@"lastMessage"];
     }
     
     NSString* message = [[notification objectForKey:@"aps"] objectForKey:@"alert"];
@@ -161,6 +170,8 @@
     
     [defaults synchronize];
     [previewTableViewController checkStatus];
+    [previewTableViewController reloadFeed];
+    [previewTableViewController.tableView reloadData];
 }
 
 @end

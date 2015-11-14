@@ -20,20 +20,6 @@
                ReferencedContainer = "container:Simple Reader.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4716A0981B4DC0D10094DB34"
-               BuildableName = "Simple ReaderTests.xctest"
-               BlueprintName = "Simple ReaderTests"
-               ReferencedContainer = "container:Simple Reader.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -42,16 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4716A0981B4DC0D10094DB34"
-               BuildableName = "Simple ReaderTests.xctest"
-               BlueprintName = "Simple ReaderTests"
-               ReferencedContainer = "container:Simple Reader.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

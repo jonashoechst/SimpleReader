@@ -35,12 +35,12 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [[self navigationController] setNavigationBarHidden:NO animated:YES];
     [super viewWillDisappear:animated];
     
     [self.navigationController setHidesBarsOnSwipe:NO];
     [self.navigationController setHidesBarsOnTap:NO];
     [self.navigationController setHidesBarsWhenVerticallyCompact:NO];
-    
 }
 
 - (BOOL)prefersStatusBarHidden{

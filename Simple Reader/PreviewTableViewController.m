@@ -25,15 +25,18 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        NSString *documentDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-        self.feedPath = [documentDir stringByAppendingPathComponent:@"feed.json"];
+//        NSString *documentDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+//        self.feedPath = [documentDir stringByAppendingPathComponent:@"feed.json"];
         self.fileDownloads = [[NSMutableArray alloc] init];
     }
+    
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+    [self.tableView setSeparatorInset:UIEdgeInsetsZero];
     
     // Take action of a user taking screenshots:
     NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
@@ -62,15 +65,10 @@
                                            queue:[[NSOperationQueue alloc] init]
                                completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError)
         {
-            
             NSError *error = connectionError;
             
             if (error != nil) {
                 NSLog(@"Error in reporting screenshot: %@", error);
-                return;
-            }
-            if ( data == nil ) {
-                NSLog(@"Data is nil, but there appears to be no error.");
                 return;
             }
             
@@ -81,28 +79,48 @@
             }
             
             [defaults setObject:[jsonDict objectForKey:@"status"] forKey:@"status"];
+            [defaults setObject:[jsonDict objectForKey:@"lastMessage"] forKey:@"lastMessage"];
             NSMutableArray *pubDict = [jsonDict objectForKey:@"publications"];
             [defaults setObject:pubDict forKey:@"publications"];
             [defaults synchronize];
+
             
             [self checkStatus];
-            [self reloadFeed];
-            [self.tableView reloadData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[[UIAlertView alloc] initWithTitle:@"Hesseblättche" message:[jsonDict objectForKey:@"lastMessage"] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles: nil] show];
+                [self reloadFeed];
+                [self.tableView reloadData];
+            });
+            
         }];
     }];
     
+    // configuring statusButton
+    CGRect bounds = self.statusButton.bounds;
+    CAShapeLayer *circleLayer = [CAShapeLayer layer];
+    [circleLayer setBounds:bounds];
+    [circleLayer setPosition:  CGPointMake(bounds.size.width/2, bounds.size.height/2)];
+    UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:bounds];
+    
+    [circleLayer setPath:[path CGPath]];
+    [circleLayer setStrokeColor:[[UIColor blackColor] CGColor]];
+    [circleLayer setLineWidth:0];
+//    [circleLayer setOpacity:0.5];
+    [self.statusButton.layer addSublayer:circleLayer];
+    [self checkStatus];
+    
+    // configuring refreshControl
     self.refreshControl = [[UIRefreshControl alloc] init];
     self.refreshControl.backgroundColor = [UIColor darkGrayColor];
     self.refreshControl.tintColor = [UIColor whiteColor];
-    [self.refreshControl addTarget:self action:@selector(updateFeed) forControlEvents:UIControlEventValueChanged];
+    [self.refreshControl addTarget:self action:@selector(pulledToRefresh) forControlEvents:UIControlEventValueChanged];
     
+    // initializing a NSURLSessionConfiguration
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSBundle mainBundle] bundleIdentifier]];
     sessionConfiguration.HTTPMaximumConnectionsPerHost = 5;
     self.session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
     
     [self reloadFeed];
-    [self checkStatus];
-    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -110,37 +128,70 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Register related methods
+#pragma mark - SimpleReader API related methods
 
+// Checks state from NSUserDefaults, sets colour or
 - (void) checkStatus{
-    // Check if user is already registered
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *status = [defaults stringForKey:@"status"];
-    if ( status == nil || [status isEqualToString:@"unknown"] ){
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
-        UIViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"RegisterView"];
-        [self presentViewController:vc animated:YES completion:nil];
-    }
-    if ([status isEqualToString:@"red"]) {
-        NSArray* emptyPub = [[NSArray alloc] init];
-        [defaults setObject:emptyPub forKey:@"publications"];
-    }
+    CAShapeLayer *circleLayer = (CAShapeLayer*) [[self.statusButton.layer sublayers] objectAtIndex:0];
     
-    [self reloadFeed];
+    if ( status == nil || [status isEqualToString:@"unknown"] ){
+        [circleLayer setFillColor:[[UIColor whiteColor] CGColor]];
+        
+        // Call RegisterView Controller, if device is unknown.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+            UIViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"RegisterView"];
+            [self presentViewController:vc animated:YES completion:nil];
+        });
+    } else if ([status isEqualToString:@"new"] ){
+        [circleLayer setFillColor:[[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.5] CGColor]];
+    } else if ([status isEqualToString:@"green"] ){
+        // Battery Icon Colour
+        [circleLayer setFillColor:[[UIColor colorWithRed:76.0/255.0 green:217.0/255.0 blue:100.0/255.0 alpha:1.0] CGColor]];
+    } else if ([status isEqualToString:@"yellow"] ){
+        // Battery Icon Colour
+        [circleLayer setFillColor:[[UIColor colorWithRed:255.0/255.0 green:204.0/255.0 blue:0.0/255.0 alpha:1.0] CGColor]];
+    } else if ([status isEqualToString:@"red"]) {
+        // Heavy read, battery colour is unknown at this point
+        [circleLayer setFillColor:[[UIColor colorWithRed:255.0/255.0 green:0.0/255.0 blue:0.0/255.0 alpha:1.0] CGColor]];
+        
+        // Empty publications fromNSUserDefaults
+        [defaults setObject:[[NSArray alloc] init] forKey:@"publications"];
+        [defaults synchronize];
+        
+        // If a PDF is viewed, pop it from the navigation controller.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.navigationController.topViewController != self){
+                [[self navigationController] setNavigationBarHidden:NO animated:YES];
+                [[self navigationController] popViewControllerAnimated:YES];
+            }
+        });
+    }
+
 }
 
-#pragma mark - Feed related methods
-
+// Simulates the User pulling to refresh
 - (void) invokeRefresh{
     [self.refreshControl beginRefreshing];
     [self.tableView setContentOffset:CGPointMake(0, self.tableView.contentOffset.y-self.refreshControl.frame.size.height) animated:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self updateFeed];
+        [self pulledToRefresh];
     });
 }
 
+// Method to be called after a Pull To Refresh
+- (void) pulledToRefresh {
+    [self updateFeed];
+    [self checkStatus];
+    [self reloadFeed];
+    [self.refreshControl endRefreshing];
+    [self.tableView reloadData];
+}
+
+// Updates the feed from the server
 - (void)updateFeed {
-    
     NSError *error = nil;
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -158,86 +209,81 @@
     [request setHTTPBody:postData];
     
     NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse: nil error: &error];
-
     if (error != nil) {
-        [self.refreshControl endRefreshing];
         NSLog(@"Error in download from url: %@", error);
+        
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Aktualisieren fehlgeschlagen." message:[error localizedDescription] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil];
+        [alert show];
+        
         return;
     }
     
     NSMutableDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:responseData options:kNilOptions error:&error];
     if (error != nil) {
-        [self.refreshControl endRefreshing];
         NSLog(@"Error in parsing json feed: %@", error);
+        
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Aktualisieren fehlgeschlagen." message:[error localizedDescription] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil];
+        [alert show];
+        
         return;
     }
     
     [defaults setObject:[jsonDict objectForKey:@"status"] forKey:@"status"];
-    NSMutableArray *pubDict = [jsonDict objectForKey:@"publications"];
-    [defaults setObject:pubDict forKey:@"publications"];
+    [defaults setObject:[jsonDict objectForKey:@"lastMessage"] forKey:@"lastMessage"];
+    [defaults setObject:[jsonDict objectForKey:@"publications"] forKey:@"publications"];
     [defaults synchronize];
-    
-    
-    [self checkStatus];
-    [self reloadFeed];
-    [self.refreshControl endRefreshing];
-    [self.tableView reloadData];
-    
 }
 
-
+// reloads the JsonFeed from NSUserDefaults
 - (void) reloadFeed{
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSMutableArray *pubDict = [defaults objectForKey:@"publications"];
     
     NSMutableArray *newEditions = [[NSMutableArray alloc] init];
-    for(NSMutableDictionary *editionDict in pubDict) {
-        [newEditions addObject:[self parseEditionDict:editionDict]];
-    }
-    
     self.categories = [[NSMutableOrderedSet alloc] initWithCapacity:20];
     
-    for(Edition *edition in newEditions){
+    for(NSMutableDictionary *editionDict in pubDict) {
+        Edition *edition = [self parseEditionDict:editionDict];
+        [newEditions addObject:edition];
         [self.categories addObject:edition.category];
     }
-    self.allEditions = newEditions;
     
+    self.allEditions = newEditions;
     [self newFilterCategory: self.filterCategory];
 }
 
+- (IBAction)statusButtonPressed:(id)sender {
+}
 
-
+// Creates and shows the category chooser
 - (IBAction)categoryButtonPressed:(id)sender {
     UIAlertController * view =   [UIAlertController alertControllerWithTitle:@"Wähle eine Kategorie aus..." message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
-    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
-        // The device is an iPad running iOS 3.2 or later.
-        
-//        view.popoverPresentationController.sourceView = self.view;
-//        view.popoverPresentationController.sourceRect = CGRectMake(0, 0, 60, 10);
+    // Use different Style on iPads
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
         view.popoverPresentationController.barButtonItem = sender;
-    }
     
     for(NSString *category in self.categories){
         UIAlertAction* option = [UIAlertAction actionWithTitle:category style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-            //Do some thing here
             [self newFilterCategory:category];
             [view dismissViewControllerAnimated:YES completion:nil];
+            [self.tableView reloadData];
         }];
         
         [view addAction:option];
-        
     }
     
     UIAlertAction* all = [UIAlertAction actionWithTitle:@"Alles anzeigen" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
-                                [self newFilterCategory:nil];
-                                [view dismissViewControllerAnimated:YES completion:nil];
-                            }];
+        [self newFilterCategory:nil];
+        [view dismissViewControllerAnimated:YES completion:nil];
+        [self.tableView reloadData];
+    }];
     
     [view addAction:all];
     [self presentViewController:view animated:YES completion:nil];
 }
 
+// sets a new filterCategory and filters the matching editions
 - (void) newFilterCategory:(NSString *)category{
     self.filterCategory = category;
     
@@ -253,11 +299,9 @@
             }
         }
     }
-    
-    [self.tableView reloadData];
-    
 }
 
+// parses the Editions from a json editionDict
 - (Edition *) parseEditionDict:(NSMutableDictionary *)editionDict {
     
     Edition *edition = [[Edition alloc] init];
@@ -307,24 +351,23 @@
     return edition;
 }
 
+#pragma mark - Download related Methods
+
 - (void) downloadPreviewImageFromURL:(NSString*) url toFilePath:(NSString*) filePath forEdition:(Edition*) edition{
-    
     NSURLRequest *previewRequest = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
     
     [NSURLConnection sendAsynchronousRequest:previewRequest queue:[NSOperationQueue currentQueue] completionHandler:
      ^(NSURLResponse *previewRequest, NSData *data, NSError *error) {
-        if (error) {
-            NSLog(@"Preview Image Download Error: %@", error);
-        }
-        if (data) {
-            [data writeToFile:filePath atomically:YES];
-            edition.previewImage  = [UIImage imageNamed:filePath];
-            [self.tableView reloadData];
-        }
-    }];
+         if (error) {
+             NSLog(@"Preview Image Download Error: %@", error);
+         }
+         if (data) {
+             [data writeToFile:filePath atomically:YES];
+             edition.previewImage  = [UIImage imageNamed:filePath];
+             [self.tableView reloadData];
+         }
+     }];
 }
-
-#pragma mark - Download related Methods
 
 - (FileDownload*) getFileDownloadForUrl:(NSString *)url{
     for(FileDownload* download in self.fileDownloads){
@@ -340,7 +383,12 @@
     if (self.filteredEditions == nil || [self.filteredEditions count] == 0){
         UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
         
-        messageLabel.text = @"Es sind noch keine Veröffentlichungen vorhanden.\n\n Bitte ziehen um den Feed zu aktualisieren.";
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        
+        NSString *lastMessage = [defaults objectForKey:@"lastMessage"];
+        NSString *text = [NSString stringWithFormat:@"%@\n\nNach unten ziehen um den Feed und den Status zu aktualisieren.", lastMessage];
+        
+        messageLabel.text = text;
         messageLabel.textColor = [UIColor blackColor];
         messageLabel.numberOfLines = 0;
         messageLabel.textAlignment = NSTextAlignmentCenter;
@@ -348,9 +396,11 @@
         [messageLabel sizeToFit];
         
         self.tableView.backgroundView = messageLabel;
+        
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     } else  {
         self.tableView.backgroundView = nil;
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     }
     return 1;
 }
@@ -386,8 +436,7 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(editingStyle == UITableViewCellEditingStyleDelete)
-    {
+    if(editingStyle == UITableViewCellEditingStyleDelete) {
         Edition* selected = [self.filteredEditions objectAtIndex:indexPath.row];
         if (selected.status == downloaded){
             NSError *error;
@@ -476,7 +525,9 @@
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     
-    Edition *edition = self.filteredEditions[self.toDownloadIndex];
+    Edition *edition;
+    if ([self.filteredEditions count] > self.toDownloadIndex)
+        edition = self.filteredEditions[self.toDownloadIndex];
     
     if (alertView.tag == downloadQuestion) {
         if (buttonIndex == 1) {
@@ -578,8 +629,6 @@
     } else {
         NSLog(@"Downloaded file could not be copied: %@", error);
     }
-    
-    
 }
 
 -(void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session{
