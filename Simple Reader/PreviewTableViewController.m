@@ -84,9 +84,8 @@
             [defaults setObject:pubDict forKey:@"publications"];
             [defaults synchronize];
 
-            
-            [self checkStatus];
             dispatch_async(dispatch_get_main_queue(), ^{
+                [self checkStatus];
                 [[[UIAlertView alloc] initWithTitle:@"Hesseblättche" message:[jsonDict objectForKey:@"lastMessage"] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles: nil] show];
                 [self reloadFeed];
                 [self.tableView reloadData];

@@ -24,7 +24,6 @@
     [self.navigationController setHidesBarsOnTap:YES];
     [self.navigationController setHidesBarsWhenVerticallyCompact:YES];
     
-    
     NSURL *url = [NSURL fileURLWithPath:self.edition.pdfPath];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [_webView loadRequest:request];
@@ -35,6 +34,15 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    // Saving scroll position
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *contentOffsetString = NSStringFromCGPoint(_webView.scrollView.contentOffset);
+    CGFloat zoomScale = _webView.scrollView.zoomScale;
+    [defaults setObject:contentOffsetString forKey:[NSString stringWithFormat:@"%@-contentOffset", self.edition.pdfPath]];
+    [defaults setFloat:zoomScale forKey:[NSString stringWithFormat:@"%@-zoomScale", self.edition.pdfPath]];
+    [defaults synchronize];
+    
+    // Resetting navigationBar / properties
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
     [super viewWillDisappear:animated];
     
@@ -47,12 +55,6 @@
     return YES;
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         [[UIApplication sharedApplication] openURL:[request URL]];
@@ -61,14 +63,21 @@
     return YES;
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    // Restoring scroll / zoom position
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *contentOffsetString = [defaults objectForKey:[NSString stringWithFormat:@"%@-contentOffset", self.edition.pdfPath]];
+    CGFloat zoomScale = [defaults floatForKey:[NSString stringWithFormat:@"%@-zoomScale", self.edition.pdfPath]];
+    
+    CGPoint contentOffset;
+    if (contentOffsetString)
+        contentOffset = CGPointFromString(contentOffsetString);
+    else
+        contentOffset = CGPointMake(0, -self.navigationController.navigationBar.frame.size.height);
+    
+    _webView.scrollView.zoomScale = zoomScale;
+    _webView.scrollView.contentOffset = contentOffset;
 }
-*/
+
 
 @end
