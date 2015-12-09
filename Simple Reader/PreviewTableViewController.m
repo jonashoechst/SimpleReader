@@ -153,8 +153,8 @@
         // Battery Icon Colour
         [circleLayer setFillColor:[[UIColor colorWithRed:255.0/255.0 green:204.0/255.0 blue:0.0/255.0 alpha:1.0] CGColor]];
     } else if ([status isEqualToString:@"red"]) {
-        // Heavy read, battery colour is unknown at this point
-        [circleLayer setFillColor:[[UIColor colorWithRed:255.0/255.0 green:0.0/255.0 blue:0.0/255.0 alpha:1.0] CGColor]];
+        // Battery Icon Colour
+        [circleLayer setFillColor:[[UIColor colorWithRed:255.0/255.0 green:6.0/255.0 blue:3.0/255.0 alpha:1.0] CGColor]];
         
         // Empty publications fromNSUserDefaults
         [defaults setObject:[[NSArray alloc] init] forKey:@"publications"];
