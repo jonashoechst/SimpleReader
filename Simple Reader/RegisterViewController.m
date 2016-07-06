@@ -25,6 +25,13 @@
     [self.nameTextField setText:[defaults stringForKey:@"name"]];
     [self.emailTextField setText:[defaults stringForKey:@"email"]];
     
+    NSString *lastMessage = [defaults objectForKey:@"lastMessage"];
+    if (lastMessage) {
+        NSString *defaultText = self.textView.text;
+        NSString *cattedText = [NSString stringWithFormat:@"%@\n\n%@", defaultText, lastMessage];
+        [self.textView setText:cattedText];
+    }
+    
     [self.nameTextField setKeyboardType:UIKeyboardTypeAlphabet];
     [self.nameTextField setAutocapitalizationType: UITextAutocapitalizationTypeWords];
     [self.emailTextField setKeyboardType:UIKeyboardTypeEmailAddress];

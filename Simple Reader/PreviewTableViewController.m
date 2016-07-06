@@ -251,6 +251,12 @@
 }
 
 - (IBAction)statusButtonPressed:(id)sender {
+    // Call RegisterView Controller, if device is unknown.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+        RegisterViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"RegisterView"];
+        [self presentViewController:vc animated:YES completion:nil];
+    });
 }
 
 // Creates and shows the category chooser

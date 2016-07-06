@@ -12,6 +12,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *emailTextField;
 @property (weak, nonatomic) IBOutlet UILabel *uuidLabel;
 @property (weak, nonatomic) IBOutlet UIView *overlayView;
+@property (weak, nonatomic) IBOutlet UITextView *textView;
 - (IBAction)registerButtonPressed:(id)sender;
 
 + (BOOL) isValidEmailAdress:(NSString *) checkString;
